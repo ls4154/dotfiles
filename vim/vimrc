@@ -1,0 +1,308 @@
+call plug#begin()
+
+Plug 'tpope/vim-fugitive'
+Plug 'tpope/vim-eunuch'
+Plug 'tpope/vim-surround'
+Plug 'tpope/vim-unimpaired'
+
+Plug 'prabirshrestha/asyncomplete.vim'
+Plug 'prabirshrestha/async.vim'
+Plug 'prabirshrestha/vim-lsp'
+Plug 'prabirshrestha/asyncomplete-lsp.vim'
+
+Plug 'liuchengxu/vista.vim'
+
+Plug 'scrooloose/nerdtree', { 'on': 'NERDTreeToggle' }
+Plug 'scrooloose/nerdcommenter'
+
+Plug 'majutsushi/tagbar'
+
+Plug 'octol/vim-cpp-enhanced-highlight'
+
+Plug 'vim-airline/vim-airline'
+Plug 'vim-airline/vim-airline-themes'
+
+Plug 'nanotech/jellybeans.vim'
+Plug 'ls4154/vim-material'
+
+"Plug '~/.fzf'
+Plug 'junegunn/fzf.vim'
+"Plug 'junegunn/goyo.vim'
+
+Plug 'vim-scripts/fcitx.vim'
+
+call plug#end()
+
+filetype plugin indent on
+syntax on
+
+""""""""""""""""""""""""""""""""
+" YouCompleteMe
+let g:ycm_autoclose_preview_window_after_insertion=1
+"let g:ycm_autoclose_preview_window_after_completion=1
+let g:ycm_confirm_extra_conf=0
+"let g:loaded_youcompleteme = 1
+"let g:ycm_auto_trigger=0
+"let g:ycm_add_preview_to_completeopt = 1
+
+""""""""""""""""""""""""""""""""
+" Airline
+let g:airline#extensions#tabline#enabled = 1
+let g:airline#extensions#tabline#formatter = 'default'
+let g:airline_powerline_fonts = 1
+"let g:airline_theme = 'jellybeans'
+"let g:airline_theme = 'papercolor'
+let g:airline_theme = 'material'
+
+"let g:airline_left_sep = ' '
+"let g:airline_left_alt_sep = '|'
+
+" enable/disable detection of whitespace errors.
+let g:airline#extensions#whitespace#enabled = 0
+" disable detection of whitespace errors.
+" useful to call for particular file types (e.g., in "ftplugin/*")
+" silent! call airline#extensions#whitespace#disable()
+
+let g:airline#extensions#vista#enabled = 0
+"let g:airline#extensions#tagbar#enabled = 0
+"call tagbar#StopAutoUpdate()
+
+"let g:airline#extensions#wordcount#enabled = 0
+
+""""""""""""""""""""""""""""""""
+" VimLatexLivePreview
+"let g:livepreview_previewer = 'evince'
+
+""""""""""""""""""""""""""""""""
+" NERD-Commenter
+
+" Add spaces after comment delimiters by default
+let g:NERDSpaceDelims = 1
+
+" Set a language to use its alternate delimiters by default
+"let g:NERDAltDelims_c = 1
+"let g:NERDAltDelims_cpp = 1
+
+" Enable trimming of trailing whitespace when uncommenting
+let g:NERDTrimTrailingWhitespace = 1
+
+" Align line-wise comment delimiters flush left instead of following code indentation
+let g:NERDDefaultAlign = 'left'
+
+""""""""""""""""""""""""""""""""
+" cpp-enhanced-highlight
+
+" Highlighting of user defined functions can be disabled by
+" let g:cpp_no_function_highlight = 1
+
+let c_no_curly_error = 1
+
+""""""""""""""""""""""""""""""""
+" Goyo
+
+let g:goyo_width = "85%"
+let g:goyo_height = "85%"
+
+""""""""""""""""""""""""""""""""
+" vim-lsp
+
+let g:lsp_diagnostics_echo_cursor = 1
+let g:lsp_diagnostics_echo_delay = 200
+"let g:lsp_diagnostics_enabled = 0
+"let g:lsp_signs_enabled = 0
+let g:lsp_preview_float = 1
+
+if executable('clangd')
+    au User lsp_setup call lsp#register_server({
+        \ 'name': 'clangd',
+        \ 'cmd': {server_info->['clangd', '-background-index']},
+        \ 'whitelist': ['c', 'cpp', 'objc', 'objcpp'],
+        \ })
+endif
+if executable('rls')
+    au User lsp_setup call lsp#register_server({
+        \ 'name': 'rls',
+        \ 'cmd': {server_info->['rustup', 'run', 'stable', 'rls']},
+        \ 'workspace_config': {'rust': {'clippy_preference': 'on'}},
+        \ 'whitelist': ['rust'],
+        \ })
+endif
+if executable('pyls')
+    au User lsp_setup call lsp#register_server({
+        \ 'name': 'pyls',
+        \ 'cmd': {server_info->['pyls']},
+        \ 'whitelist': ['python'],
+        \ })
+endif
+" if executable('clangd')
+"     augroup lsp_clangd
+"         autocmd!
+"         autocmd User lsp_setup call lsp#register_server({
+"                     \ 'name': 'clangd',
+"                     \ 'cmd': {server_info->['clangd']},
+"                     \ 'whitelist': ['c', 'cpp', 'objc', 'objcpp'],
+"                     \ })
+"         autocmd FileType c setlocal omnifunc=lsp#complete
+"         autocmd FileType cpp setlocal omnifunc=lsp#complete
+"         autocmd FileType objc setlocal omnifunc=lsp#complete
+"         autocmd FileType objcpp setlocal omnifunc=lsp#complete
+"     augroup end
+" endif
+
+function! s:on_lsp_buffer_enabled() abort
+    setlocal omnifunc=lsp#complete
+    setlocal signcolumn=yes
+    nmap <buffer> gd <plug>(lsp-definition)
+    "nmap <buffer> <f2> <plug>(lsp-rename)
+    " refer to doc to add more commands
+endfunction
+
+augroup lsp_install
+    au!
+    " call s:on_lsp_buffer_enabled only for languages that has the server registered.
+    autocmd User lsp_buffer_enabled call s:on_lsp_buffer_enabled()
+augroup END
+
+let g:lsp_auto_enable=0
+let s:lsp_enabled = 0
+function! ToggleLsp()
+    if s:lsp_enabled
+        call lsp#disable()
+        let s:lsp_enabled = 0
+        echo "lsp disabled"
+    else
+        call lsp#enable()
+        let s:lsp_enabled = 1
+        echo "lsp enabled"
+    endif
+endfunction
+
+""""""""""""""""""""""""""""""""
+" Vista
+
+let g:vista_executive_for = {
+  \ 'c': 'vim_lsp',
+  \ 'cpp': 'vim_lsp',
+  \ 'rust': 'vim_lsp',
+  \ 'python': 'vim_lsp',
+  \ }
+
+let g:vista_sidebar_width = 40
+
+""""""""""""""""""""""""""""""""
+let $FZF_DEFAULT_COMMAND = 'rg --files'
+
+set tabstop=8
+set shiftwidth=4
+set softtabstop=4
+set expandtab
+
+set hlsearch
+set incsearch
+set number
+set relativenumber
+set showcmd
+set ignorecase
+set smartcase
+
+set scrolloff=2
+
+set history=256
+
+set title
+set laststatus=2
+set wildmenu
+
+set fileencodings=utf-8,euc-kr
+
+set autoindent
+
+set modeline
+set exrc
+set secure
+
+set tags=./tags;$HOME,tags;$HOME
+
+set noswapfile
+
+set hidden
+
+set updatetime=250
+
+set notitle
+
+set background=dark
+
+"set t_8f=[38;2;%lu;%lu;%lum
+"set t_8b=[48;2;%lu;%lu;%lum
+"set t_Co=256
+
+set termguicolors
+colorscheme vim-material
+
+""""""""""""""""""""""""""""""""
+
+let mapleader=","
+
+nmap <F2> :NERDTreeToggle<CR>
+imap <F2> <ESC>:NERDTreeToggle<CR>
+
+nmap <F3> :Tagbar<CR>
+imap <F3> <ESC>:Tagbar<CR>
+
+nmap <F4> :Vista!!<CR>
+		
+nmap <F5> :call ToggleLsp()<CR>
+
+nmap <F6> :Goyo<CR>
+
+function SetCppRunner()
+	nmap <F8> :w<CR>:!g++ -O2 -std=c++14 -o %< %<CR>
+	nmap <F9> :!./%<<CR>
+endfunction
+function SetCRunner()
+	nmap <F8> :w<CR>:!gcc -O2 -std=c11 -lm -o %< %<CR>
+	nmap <F9> :!./%<<CR>
+endfunction
+function SetRustRunner()
+	nmap <F8> :w<CR>:!rustc --edition 2018 -O %<CR>
+	nmap <F9> :!./%<<CR>
+endfunction
+function SetPythonRunner()
+	nmap <F9> :w<CR>:!python %<CR>
+endfunction
+function SetShRunner()
+	nmap <F9> :w<CR>:!bash %<CR>
+endfunction
+function SetPerlRunner()
+	nmap <F9> :w<CR>:!perl %<CR>
+endfunction
+
+autocmd FileType c call SetCRunner()
+autocmd FileType cpp call SetCppRunner()
+autocmd FileType rust call SetRustRunner()
+autocmd FileType python call SetPythonRunner()
+autocmd FileType sh call SetShRunner()
+autocmd FileType perl call SetPerlRunner()
+
+nmap <leader>l :bnext<CR>
+nmap <leader>h :bprevious<CR>
+nmap <leader>bq :bprevious <BAR> bd #<CR>
+nmap <leader>bl :ls<CR>
+
+nmap <leader>ws :AirlineToggleWhitespace<CR>
+
+nmap <C-j> :bprevious<CR>
+nmap <C-k> :bnext<CR>
+
+inoremap <expr> <Tab>   pumvisible() ? "\<C-n>" : "\<Tab>"
+inoremap <expr> <S-Tab> pumvisible() ? "\<C-p>" : "\<S-Tab>"
+inoremap <expr> <cr>    pumvisible() ? "\<C-y>" : "\<cr>"
+
+inoremap <leader><tab> <tab>
+nnoremap <leader>j :YcmCompleter GoTo<CR>
+nnoremap <leader>dc :YcmCompleter GoToDeclaration<CR>
+nnoremap <leader>df :YcmCompleter GoToDefinition<CR>
+nnoremap <leader>ic :YcmCompleter GoToInclude<CR>
+nnoremap <leader>t :YcmCompleter GetType<CR>
+nnoremap <leader>p :YcmCompleter GetParent<CR>
