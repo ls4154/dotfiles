@@ -1,0 +1,5 @@
+#!/bin/sh
+
+feh --no-fehbg --bg-fill "$HOME/nextcloud/wallpaper/arch/nordtheme.png"
+
+#feh --no-fehbg --bg-center "$HOME/nextcloud/wallpaper/arch/NyaITD5.png"

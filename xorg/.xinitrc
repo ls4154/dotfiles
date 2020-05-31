@@ -1,0 +1,37 @@
+#!/bin/bash
+
+#xrdb -merge ~/.Xresources
+
+export QT_IM_MODULE=fcitx
+export GTK_IM_MODULE=fcitx
+export XIM=fcitx
+export XMODIFIERS=@im=fcitx
+
+export TERMINAL=termite
+
+PATH=$PATH:$HOME/.local/bin
+
+compton &
+
+fcitx -d &
+
+#xset s 1800 1800
+xset s off
+xset dpms 3600 3600 3600
+
+pulseaudio --start
+
+nm-applet &
+
+dunst &
+
+udiskie -n -t -A &
+
+source /etc/X11/xinit/xinitrc.d/50-systemd-user.sh
+
+eval $(/usr/bin/gnome-keyring-daemon --start --components=pkcs11,secrets,ssh)
+export SSH_AUTH_SOCK
+
+~/.fehbg &
+
+exec i3
