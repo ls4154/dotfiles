@@ -1,0 +1,11 @@
+#!/bin/bash
+
+CLASS_NAME=$1
+CMD=$2
+
+if ! xdotool search --classname "$CLASS_NAME" > /dev/null; then
+	i3-msg "exec termite -e $2 --name=$CLASS_NAME --class=$CLASS_NAME"
+	sleep .5
+fi
+
+i3-msg "[instance=\"$CLASS_NAME\"] scratchpad show"

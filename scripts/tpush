@@ -1,0 +1,17 @@
+#!/bin/bash
+
+if [ $# -eq 0 ]
+then
+	T_MSG="Hello!!"
+else
+	T_MSG="$*"
+fi
+
+T_STATUS=$(curl -s --output /dev/null --write-out '%{http_code}\n' \
+	-X POST https://api.telegram.org/bot${T_BOT_TOKEN}/sendMessage \
+	-d chat_id=${T_CHAT_ID} -d text="$T_MSG")
+
+if [ "$T_STATUS" != "200" ]
+then
+	echo "tpush: Failed to send notification!" 1>&2
+fi

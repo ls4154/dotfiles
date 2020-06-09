@@ -1,0 +1,5 @@
+#!/bin/bash
+uname -r
+uname -r | cut -d'-' -f1
+echo "#FFFFFF"
+

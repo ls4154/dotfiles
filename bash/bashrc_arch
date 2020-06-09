@@ -1,0 +1,61 @@
+#
+# ~/.bashrc
+#
+
+# If not running interactively, don't do anything
+[[ $- != *i* ]] && return
+
+# aliases
+alias cat="bat"
+alias ccat="bat --color always"
+alias ls='ls --color=auto'
+alias cls='ls --color=always'
+alias grep='grep --color=auto'
+alias ress='less -r'
+alias y2mp3='youtube-dl -x -f bestaudio --audio-format mp3'
+alias y2mp4='youtube-dl -f "bestvideo[ext=mp4]+bestaudio[ext=m4a]"'
+alias rng='source ranger'
+alias neofetch='neofetch --block_range 0 15'
+
+# bash-completion
+source /usr/share/bash-completion/bash_completion
+
+# history
+export HISTCONTROL=ignoreboth
+export HISTSIZE=65536
+export HISTFILESIZE=65536
+
+# fzf
+source /usr/share/fzf/key-bindings.bash
+source /usr/share/fzf/completion.bash
+export FZF_DEFAULT_OPTS='--no-mouse'
+
+# man
+export MANPAGER="sh -c 'col -bx | bat -l man -p'"
+
+# PS
+SGR_BOLD='\[\e[1m\]'
+SGR_BLUE='\[\e[34m\]'
+SGR_BLUE_BOLD='\[\e[34;1m\]'
+SGR_RED='\[\e[31m\]'
+SGR_RED_BOLD='\[\e[31;1m\]'
+SGR_YELLOW='\[\e[33m\]'
+SGR_YELLOW_BOLD='\[\e[33;1m\]'
+SGR_GREEN='\[\e[32m\]'
+SGR_GREEN_BOLD='\[\e[32m;1m\]'
+SGR_RESET='\[\e[0m\]'
+#PS1='[\u@\h \W]\$ '
+PS1="$SGR_BOLD$SGR_BLUE[$SGR_YELLOW\u:$SGR_GREEN\W$SGR_BLUE]$SGR_RED \$ $SGR_RESET"
+
+export EDITOR=vim
+export TERM=xterm-256color
+
+export PATH="$HOME/.local/bin:$PATH"
+
+source $HOME/.cargo/env
+
+source /etc/profile.d/vte.sh
+
+#iostat
+export S_COLORS=1
+

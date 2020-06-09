@@ -1,0 +1,70 @@
+#!/bin/bash
+
+ICON_0=
+ICON_1=
+ICON_2=
+ICON_3=
+ICON_4=
+ICON_C=
+ICON_U=?
+
+LINE=$(acpi -b 2>/dev/null | head -n 1)
+if [ -z "$LINE" ]; then
+	echo "NO BATTERY"
+	echo "NO BAT"
+	exit 0
+fi
+
+STATUS=$(echo $LINE | egrep -o "(Unknown|Discharging|Charging|Full)")
+PERCENTAGE=$(echo $LINE | egrep -o "[0-9]+%")
+INTEGER=$(echo $PERCENTAGE | egrep -o "[0-9]+")
+MSG="$ICON_0 $PERCENTAGE"
+
+
+RED="#FF0000"
+YELLOW="#FFFF00"
+GREEN="#00FF00"
+WHITE="#FFFFFF"
+
+if [ "$STATUS" == "Unknown" ]; then
+	MSG="? $PERCENTAGE"
+	COLOR=$WHITE
+elif [ "$STATUS" == "Charging" ]; then
+	MSG="$ICON_C $PERCENTAGE"
+	COLOR=$WHITE
+elif [ "$STATUS" == "Full" ]; then
+	MSG="$ICON_4 $PERCENTAGE"
+	COLOR=$WHITE
+elif [ "$INTEGER" -le 12 ]; then
+	MSG="$ICON_0 $PERCENTAGE"
+	COLOR=$RED
+elif [ "$INTEGER" -le 27 ]; then
+	MSG="$ICON_1 $PERCENTAGE"
+	COLOR=$YELLOW
+elif [ "$INTEGER" -le 62 ]; then
+	MSG="$ICON_2 $PERCENTAGE"
+	COLOR=$YELLOW
+elif [ "$INTEGER" -le 87 ]; then
+	MSG="$ICON_3 $PERCENTAGE"
+	COLOR=$GREEN
+else
+	MSG="$ICON_4 $PERCENTAGE"
+	COLOR=$GREEN
+fi
+
+# long
+echo $MSG
+# short
+echo $MSG
+# color
+echo $COLOR
+
+#Battery 0: Charging, 77%, 00:28:03 until charged
+#Battery 0: Discharging, 77%, 06:19:32 remaining
+#Battery 0: Unknown, 77%, rate information unavailable
+#Battery 0: Unknown, 77%
+#Battery 0: Discharging, 100%, 10:53:50 remaining
+#Battery 0: Full, 100%
+#No support for device type: power_supply
+
+

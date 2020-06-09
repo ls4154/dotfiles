@@ -1,0 +1,27 @@
+#!/bin/bash
+
+#  
+
+INTERFACE="${INTERFACE:-wlan0}"
+IW_OUTPUT="$(iw dev $INTERFACE link)"
+if [ "$?" -ne 0 ]; then
+	echo "no iface"
+	echo "no iface"
+	echo "#FF0000"
+	exit 0
+fi
+
+if [ "$(echo "$IW_OUTPUT" | grep -c 'Not connected')" -ge 1 ]; then
+	echo "down"
+	echo "down"
+	echo "#FF0000"
+	exit 0
+fi
+
+IW_OUTPUT=$(echo "$IW_OUTPUT" | awk '/SSID/{ for(i=2;i<=NF;++i)printf "%s ", $i}; /signal/{printf "(%ddBm)", $2}')
+
+IP_OUTPUT=$(ip address show dev $INTERFACE | egrep -o "([0-9]+\.){3}([0-9]+)" -m 1 | head -n 1)
+
+echo "$IP_OUTPUT $IW_OUTPUT"
+echo "$IW_OUTPUT"
+echo "#FFFFFF"

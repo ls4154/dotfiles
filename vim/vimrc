@@ -292,8 +292,8 @@ nmap <leader>bl :ls<CR>
 
 nmap <leader>ws :AirlineToggleWhitespace<CR>
 
-nmap <C-j> :bprevious<CR>
-nmap <C-k> :bnext<CR>
+nmap <C-k> :bprevious<CR>
+nmap <C-j> :bnext<CR>
 
 inoremap <expr> <Tab>   pumvisible() ? "\<C-n>" : "\<Tab>"
 inoremap <expr> <S-Tab> pumvisible() ? "\<C-p>" : "\<S-Tab>"
@@ -306,3 +306,5 @@ nnoremap <leader>df :YcmCompleter GoToDefinition<CR>
 nnoremap <leader>ic :YcmCompleter GoToInclude<CR>
 nnoremap <leader>t :YcmCompleter GetType<CR>
 nnoremap <leader>p :YcmCompleter GetParent<CR>
+
+nmap <silent> <C-p> :FZF<CR>

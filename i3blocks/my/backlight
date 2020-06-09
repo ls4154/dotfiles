@@ -1,0 +1,12 @@
+#!/bin/bash
+
+BR_PATH="/sys/class/backlight/intel_backlight"
+
+BR_CUR=$(cat "$BR_PATH/brightness")
+BR_MAX=$(cat "$BR_PATH/max_brightness")
+
+BR_PERCENT=$(expr 100 \* $BR_CUR / $BR_MAX)
+
+#LABEL=""
+
+echo "$BR_PERCENT%"

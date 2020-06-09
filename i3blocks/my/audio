@@ -1,0 +1,7 @@
+#!/bin/bash
+
+OUTPUT=$(amixer get Master -M | egrep -o "[0-9]+%" | head -n 1)
+
+echo $OUTPUT
+echo $OUTPUT
+echo "#FFFFFF"
