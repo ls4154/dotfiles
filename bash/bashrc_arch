@@ -63,6 +63,6 @@ export PATH="$HOME/.local/bin:$PATH"
 source $HOME/.cargo/env
 source /etc/profile.d/vte.sh
 
-#iostat
-export S_COLORS=1
+# iostat
+export S_COLORS=auto
 
