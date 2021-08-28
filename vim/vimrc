@@ -31,19 +31,12 @@ Plug 'junegunn/fzf.vim'
 
 Plug 'vim-scripts/fcitx.vim'
 
+Plug 'unblevable/quick-scope'
+
 call plug#end()
 
 filetype plugin indent on
 syntax on
-
-""""""""""""""""""""""""""""""""
-" YouCompleteMe
-let g:ycm_autoclose_preview_window_after_insertion=1
-"let g:ycm_autoclose_preview_window_after_completion=1
-let g:ycm_confirm_extra_conf=0
-"let g:loaded_youcompleteme = 1
-"let g:ycm_auto_trigger=0
-"let g:ycm_add_preview_to_completeopt = 1
 
 """"""""""""""""""""""""""""""""
 " Airline
@@ -57,17 +50,25 @@ let g:airline_theme = 'material'
 "let g:airline_left_sep = ' '
 "let g:airline_left_alt_sep = '|'
 
+let g:airline#extensions#scrollbar#enabled = 1
+let g:airline_symbols_ascii = 1
+
 " enable/disable detection of whitespace errors.
 let g:airline#extensions#whitespace#enabled = 0
 " disable detection of whitespace errors.
 " useful to call for particular file types (e.g., in "ftplugin/*")
 " silent! call airline#extensions#whitespace#disable()
 
+let g:airline#extensions#whitespace#mixed_indent_algo = 2
+
 let g:airline#extensions#vista#enabled = 0
 "let g:airline#extensions#tagbar#enabled = 0
 "call tagbar#StopAutoUpdate()
 
-"let g:airline#extensions#wordcount#enabled = 0
+let g:airline#extensions#tagbar#searchmethod = 'scoped-stl'
+
+let g:airline#extensions#wordcount#enabled = 0
+
 
 """"""""""""""""""""""""""""""""
 " VimLatexLivePreview
@@ -134,6 +135,17 @@ if executable('pyls')
         \ 'whitelist': ['python'],
         \ })
 endif
+if executable('bash-language-server')
+  augroup LspBash
+    autocmd!
+    autocmd User lsp_setup call lsp#register_server({
+          \ 'name': 'bash-language-server',
+          \ 'cmd': {server_info->[&shell, &shellcmdflag, 'bash-language-server start']},
+          \ 'allowlist': ['sh'],
+          \ })
+  augroup END
+endif
+
 " if executable('clangd')
 "     augroup lsp_clangd
 "         autocmd!
@@ -156,6 +168,13 @@ function! s:on_lsp_buffer_enabled() abort
     "nmap <buffer> <f2> <plug>(lsp-rename)
     " refer to doc to add more commands
 endfunction
+
+if !has('nvim')
+    autocmd User lsp_float_opened
+                \ call popup_setoptions(lsp#ui#vim#output#getpreviewwinid(),
+                \              {'border': [0, 0, 0, 0],
+                \               'padding': [1, 1, 1, 1]})
+end
 
 augroup lsp_install
     au!
@@ -190,6 +209,10 @@ let g:vista_executive_for = {
 let g:vista_sidebar_width = 40
 
 """"""""""""""""""""""""""""""""
+
+let g:qs_highlight_on_keys = ['f', 'F', 't', 'T']
+
+""""""""""""""""""""""""""""""""
 let $FZF_DEFAULT_COMMAND = 'rg --files'
 
 set tabstop=8
@@ -211,7 +234,10 @@ set history=256
 
 set title
 set laststatus=2
+
+set wildmode=longest:full,full
 set wildmenu
+set wildignore=*.o,*~
 
 set fileencodings=utf-8,euc-kr
 
@@ -237,8 +263,25 @@ set background=dark
 "set t_8b=[48;2;%lu;%lu;%lum
 "set t_Co=256
 
+"autocmd Filetype c set tabstop=8 shiftwidth=8
+"autocmd BufNewFile,BufRead *.h set filetype=c
+
+
 set termguicolors
-colorscheme vim-material
+ colorscheme vim-material
+"let g:material_theme_style = 'darker'
+"colorscheme material
+
+set list
+set listchars=tab:\ \ ,trail:•,precedes:«,extends:»
+" set listchars=tab:→\ ,space:·,nbsp:␣,trail:•,eol:¶,precedes:«,extends:»
+" set listchars=trail:•
+" set listchars+=tab:›\
+" set listchars+=space:·
+" set listchars+=extends:»
+" set listchars+=precedes:«
+" set listchars+=nbsp:░
+
 
 """"""""""""""""""""""""""""""""
 
@@ -308,3 +351,21 @@ nnoremap <leader>t :YcmCompleter GetType<CR>
 nnoremap <leader>p :YcmCompleter GetParent<CR>
 
 nmap <silent> <C-p> :FZF<CR>
+
+nnoremap <silent> <C-l> :nohlsearch<CR><C-l>
+
+command R Rg
+command Lws LspWorkspaceSymbol
+command Lh LspHover
+command Lr LspReference
+
+augroup Binary
+  au!
+  au BufReadPre  *.bin let &bin=1
+  au BufReadPost *.bin if &bin | %!xxd
+  au BufReadPost *.bin set ft=xxd | endif
+  au BufWritePre *.bin if &bin | %!xxd -r
+  au BufWritePre *.bin endif
+  au BufWritePost *.bin if &bin | %!xxd
+  au BufWritePost *.bin set nomod | endif
+augroup END
